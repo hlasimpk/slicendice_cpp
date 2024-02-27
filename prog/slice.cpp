@@ -2,19 +2,11 @@
 
 #include <json/json.h>
 
-#include <algorithm>
-#include <cmath>
 #include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
-#include <numeric>
-#include <sstream>
-#include <stdio.h>
 #include <string>
 
-#include<chrono>
-
-using namespace std;
 
 // Convert a Json::Value to an Eigen::MatrixXd
 Eigen::MatrixXd json_to_matrix(Json::Value root) {
@@ -23,42 +15,97 @@ Eigen::MatrixXd json_to_matrix(Json::Value root) {
 
     Eigen::MatrixXd matrix(rows, cols);
     for (int i = 0; i < rows; i++) {
-        matrix(i, 0) = root[to_string(i)]["x"].asDouble();
-        matrix(i, 1) = root[to_string(i)]["y"].asDouble();
-        matrix(i, 2) = root[to_string(i)]["z"].asDouble();
+        matrix(i, 0) = root[std::to_string(i)]["x"].asDouble();
+        matrix(i, 1) = root[std::to_string(i)]["y"].asDouble();
+        matrix(i, 2) = root[std::to_string(i)]["z"].asDouble();
     }
     return matrix;
 }
 
+// Convert an Eigen::VectorXd to a Json::Value
+Json::Value vector_to_json(Eigen::VectorXi vector) {
+    Json::Value root(Json::arrayValue);
+    for (int i = 0; i < vector.size(); i++) {
+        Json::Value item;
+        item[std::to_string(i)] = vector(i);
+        root.append(item);
+    }
+    return root;
+}
 
-int main(){
+int main(int argc, char** argv){
+    std::string input_json;
+    std::string clustering_method;
+    int nclusters;
+    std::string output_json;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--input_json") {
+            if (i + 1 < argc) { 
+                input_json = argv[++i]; 
+            } else {
+                std::cerr << "--input_data option requires one argument." << std::endl;
+                return 1;
+            }  
+        } else if (arg == "--nclusters") {
+            if (i + 1 < argc) { 
+                nclusters = std::stoi(argv[++i]); 
+            } else {
+                nclusters = 3;
+            }
+        } else if (arg == "--clustering_method") {
+            if (i + 1 < argc) { 
+                clustering_method = argv[++i]; 
+            } else {
+                clustering_method = "kmeans";
+            }
+        } else if (arg == "--output_json") {
+            if (i + 1 < argc) { 
+                output_json = argv[++i]; 
+            } else {
+                output_json = "output.json";
+            } 
+        } else if (arg == "--help") {
+            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --clustering_method (Default: kmeans) --output_json (Default: output.json)" << std::endl;
+            return 0;
+        } else {
+            std::cerr << "Unknown option: " << arg << std::endl;
+            std::cerr << "Use --help to get usage information." << std::endl;
+            return 1;
+        }
+    }
 
-    ifstream file("data.json");
+    std::ifstream file(input_json);
+    if (!file) {
+        std::cerr << "Unable to open JSON file at path: " << input_json << std::endl;
+    return 1;
+}
     Json::Value root;
     file >> root;
 
     Eigen::MatrixXd atomic_matrix = json_to_matrix(root);
-    // std::cout << "Atomic matrix: " << std::endl;
-    // std::cout << atomic_matrix << std::endl;
 
-    // MatrixXd centers_init = KMeans_plus_plus(atomic_matrix, 8).run().first;
-    // std::cout << "Initial centers: " << std::endl;
-    // std::cout << centers_init << std::endl;
+    Eigen::VectorXi labels;
+    if (clustering_method == "kmeans") {
+        KMeans kmeans(nclusters);
+        kmeans.fit(atomic_matrix);
+        labels = kmeans.labels_;
+    } else {
+        std::cout << "Clustering method: " << clustering_method << " not yet implemented." << std::endl;
+    }
+    
 
-    auto start_time = std::chrono::high_resolution_clock::now();
-    KMeans kmeans;
-    kmeans.fit(atomic_matrix);
-    auto end_time = std::chrono::high_resolution_clock::now();
-
-    auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
-    std::cout << "Time taken for KMeans (microseconds):  " << execution_time << std::endl;
-
-    Eigen::VectorXi labels = kmeans.labels_;
-    std::cout << "Labels: " << std::endl;
-    std::cout << labels.transpose() << std::endl;
-
-    double inertia = kmeans.inertia_;
-    std::cout << "Inertia: " << inertia << std::endl;
+    Json::Value output;
+    output = vector_to_json(labels);
+    
+    std::ofstream outputFile(output_json);
+    if (outputFile.is_open()) {
+        outputFile << output;
+        outputFile.close();
+    } else {
+        std::cerr << "Unable to open output file." << std::endl;
+        return 1;
+    }
 
     return 0;
 }
