@@ -320,9 +320,15 @@ SparseMatrix<double> Agglomerative::fix_connected_components(
 
             MatrixXd Xj = X.block(idx_j[0], 0, idx_j.size(), X.cols());
 
+
             MatrixXd D;
             if (metric == "precomputed") {
-                D = X(idx_i, idx_j);
+                D.resize(idx_i.size(), idx_j.size());
+                for (int m = 0; m < idx_i.size(); ++m) {
+                    for (int n = 0; n < idx_j.size(); ++n) {
+                        D(m, n) = X(idx_i[m], idx_j[n]);
+                    }
+                }
             } else {
                 MatrixXd ret(Xi.rows(), Xj.rows());
                 if (Xi == Xj || Xj.size() == 0) {
