@@ -5,10 +5,12 @@ import subprocess
 
 xyzin = 'data/T1049_AF_model.pdb'
 struct = gemmi.read_structure(xyzin)
+clustering_method = 'kmeans'
 
 # Take data from models and write to input.json
 molecule_type = "protein"
 input_data = {}
+array = []
 struct.setup_entities()
 struct.remove_ligands_and_waters()
 count = 0
@@ -21,6 +23,7 @@ for model in struct:
                 atom = residue.get_p()
             if atom:
                 input_data[count] = {"x": atom.pos.x, "y": atom.pos.y, "z": atom.pos.z}
+                array.append([atom.pos.x, atom.pos.y, atom.pos.z])
                 count += 1
 
 with open('data/input.json', 'w') as f:
@@ -28,7 +31,7 @@ with open('data/input.json', 'w') as f:
 
 # Run slice
 exe_path = '../bin/slice'
-subprocess.call([exe_path, '--input_json', 'data/input.json', '--clustering_method', 'kmeans', '--nclusters', '3', '--output_json', 'data/output.json'])
+subprocess.call([exe_path, '--input_json', 'data/input.json', '--clustering_method', clustering_method, '--nclusters', '3', '--output_json', 'data/output.json'])
 
 # Read output.json
 with open('data/output.json', 'r') as f:

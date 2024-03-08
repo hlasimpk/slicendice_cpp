@@ -1,4 +1,5 @@
 #include <Eigen/Dense>
+#include <utility>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -17,3 +18,6 @@ VectorXd calculate_variance (const MatrixXd& X);
 
 MatrixXd partition (const MatrixXd& v, int kth);
 
+VectorXi unique(const VectorXi& v);
+
+std::pair<Eigen::VectorXi, Eigen::VectorXi> triu_indices(int n);

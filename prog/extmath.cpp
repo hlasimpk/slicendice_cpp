@@ -4,6 +4,8 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <numeric>
+#include <set>
+#include <utility>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -75,3 +77,26 @@ MatrixXd partition(const MatrixXd& v, int kth) {
     return result;
 }
 
+VectorXi unique(const VectorXi& v) {
+    std::set<int> unique_set; // Use a set to get unique elements
+    for (int i = 0; i < v.size(); ++i) {
+        unique_set.insert(v(i));
+    }
+    VectorXi unique_values(unique_set.size());
+    std::copy(unique_set.begin(), unique_set.end(), unique_values.data());
+    return unique_values;
+}
+
+std::pair<Eigen::VectorXi, Eigen::VectorXi> triu_indices(int n) {
+    int num_indices = n * (n - 1) / 2;
+    Eigen::VectorXi i_indices(num_indices), j_indices(num_indices);
+    int k = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            i_indices(k) = i;
+            j_indices(k) = j;
+            k++;
+        }
+    }
+    return {i_indices, j_indices};
+}

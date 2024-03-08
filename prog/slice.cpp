@@ -1,3 +1,4 @@
+#include "agglomerative.h"
 #include "kmeans.h"
 
 #include <json/json.h>
@@ -35,38 +36,32 @@ Json::Value vector_to_json(Eigen::VectorXi vector) {
 
 int main(int argc, char** argv){
     std::string input_json;
-    std::string clustering_method;
-    int nclusters;
-    std::string output_json;
+    std::string clustering_method = "agglomerative";
+    int nclusters = 3;
+    std::string output_json = "output.json";
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--input_json") {
             if (i + 1 < argc) { 
                 input_json = argv[++i]; 
             } else {
-                std::cerr << "--input_data option requires one argument." << std::endl;
+                std::cerr << "--input_json option requires one argument." << std::endl;
                 return 1;
             }  
         } else if (arg == "--nclusters") {
             if (i + 1 < argc) { 
                 nclusters = std::stoi(argv[++i]); 
-            } else {
-                nclusters = 3;
             }
         } else if (arg == "--clustering_method") {
             if (i + 1 < argc) { 
                 clustering_method = argv[++i]; 
-            } else {
-                clustering_method = "kmeans";
             }
         } else if (arg == "--output_json") {
             if (i + 1 < argc) { 
                 output_json = argv[++i]; 
-            } else {
-                output_json = "output.json";
             } 
-        } else if (arg == "--help") {
-            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --clustering_method (Default: kmeans) --output_json (Default: output.json)" << std::endl;
+        } else if (arg == "--help" || arg == "-h") {
+            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --nclusters (Default: 3) --clustering_method (Default: kmeans) --output_json (Default: output.json)" << std::endl;
             return 0;
         } else {
             std::cerr << "Unknown option: " << arg << std::endl;
@@ -90,6 +85,10 @@ int main(int argc, char** argv){
         KMeans kmeans(nclusters);
         kmeans.fit(atomic_matrix);
         labels = kmeans.labels_;
+    } else if (clustering_method == "agglomerative") {
+        Agglomerative agglomerative(nclusters);
+        agglomerative.fit(atomic_matrix);
+        labels = agglomerative.labels_;
     } else {
         std::cout << "Clustering method: " << clustering_method << " not yet implemented." << std::endl;
     }
