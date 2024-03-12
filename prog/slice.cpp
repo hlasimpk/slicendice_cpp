@@ -1,4 +1,5 @@
 #include "agglomerative.h"
+#include "birch.h"
 #include "kmeans.h"
 
 #include <json/json.h>
@@ -36,9 +37,9 @@ Json::Value vector_to_json(Eigen::VectorXi vector) {
 
 int main(int argc, char** argv){
     std::string input_json;
-    std::string clustering_method = "agglomerative";
+    std::string clustering_method = "birch";
     int nclusters = 3;
-    std::string output_json = "output.json";
+    std::string output_json = "output.json"; 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--input_json") {
@@ -61,7 +62,7 @@ int main(int argc, char** argv){
                 output_json = argv[++i]; 
             } 
         } else if (arg == "--help" || arg == "-h") {
-            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --nclusters (Default: 3) --clustering_method (Default: kmeans) --output_json (Default: output.json)" << std::endl;
+            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --nclusters (Default: 3) --clustering_method <agglomerative, birch, kmeans> (Default: birch) --output_json path/to/output.json (Default: output.json)" << std::endl;
             return 0;
         } else {
             std::cerr << "Unknown option: " << arg << std::endl;
@@ -81,14 +82,19 @@ int main(int argc, char** argv){
     Eigen::MatrixXd atomic_matrix = json_to_matrix(root);
 
     Eigen::VectorXi labels;
-    if (clustering_method == "kmeans") {
-        KMeans kmeans(nclusters);
-        kmeans.fit(atomic_matrix);
-        labels = kmeans.labels_;
-    } else if (clustering_method == "agglomerative") {
+    
+    if (clustering_method == "agglomerative") {
         Agglomerative agglomerative(nclusters);
         agglomerative.fit(atomic_matrix);
         labels = agglomerative.labels_;
+    } else if (clustering_method == "birch") {
+        Birch birch(0.5, 50, nclusters);
+        birch.fit(atomic_matrix);
+        labels = birch.labels_;
+    } else if (clustering_method == "kmeans") {
+        KMeans kmeans(nclusters);
+        kmeans.fit(atomic_matrix);
+        labels = kmeans.labels_;
     } else {
         std::cout << "Clustering method: " << clustering_method << " not yet implemented." << std::endl;
     }

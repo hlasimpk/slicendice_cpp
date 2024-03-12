@@ -5,7 +5,7 @@ import subprocess
 
 xyzin = 'data/T1049_AF_model.pdb'
 struct = gemmi.read_structure(xyzin)
-clustering_method = 'kmeans'
+clustering_method = 'birch'
 
 # Take data from models and write to input.json
 molecule_type = "protein"
@@ -85,7 +85,3 @@ for x in set(labels):
 
     if len(seqid_to_keep) > 0:
         output_split_model(xyzin, output_pdb, seqid_to_keep)
-
-
-
-
