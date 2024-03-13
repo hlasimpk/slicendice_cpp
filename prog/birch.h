@@ -253,9 +253,9 @@ class CFNode {
 
 
 class Birch {
+    int nclusters;
     double threshold; 
     int branching_factor;
-    int nclusters; 
     bool compute_labels;
     bool copy;
     MatrixXd subcluster_centers;
@@ -271,7 +271,7 @@ class Birch {
         CFNode* root_;
         CFNode* dummy_leaf_;
 
-        Birch(double input_threshold = 0.5, int input_branching_factor = 50, int input_nclusters = 3, bool input_compute_labels = true, bool input_copy = true);
+        Birch(int input_nclusters = 3, double input_threshold = 0.5, int input_branching_factor = 50, bool input_compute_labels = true, bool input_copy = true);
         void fit(MatrixXd& X, bool partial = false);
 
     private:

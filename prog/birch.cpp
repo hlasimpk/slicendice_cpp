@@ -8,10 +8,10 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::VectorXi;
 
-Birch::Birch(double input_threshold, int input_branching_factor, int input_nclusters, bool input_compute_labels, bool input_copy) :
+Birch::Birch(int input_nclusters, double input_threshold, int input_branching_factor, bool input_compute_labels, bool input_copy) :
+    nclusters(input_nclusters),
     threshold(input_threshold),
     branching_factor(input_branching_factor),
-    nclusters(input_nclusters),
     compute_labels(input_compute_labels),
     copy(input_copy) {}
 

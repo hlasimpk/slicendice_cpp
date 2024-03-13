@@ -4,6 +4,7 @@ import numpy as np
 import subprocess
 
 xyzin = 'data/T1049_AF_model.pdb'
+xyzin = 'data/ranked_0.pdb'
 struct = gemmi.read_structure(xyzin)
 clustering_method = 'birch'
 
@@ -31,7 +32,7 @@ with open('data/input.json', 'w') as f:
 
 # Run slice
 exe_path = '../bin/slice'
-subprocess.call([exe_path, '--input_json', 'data/input.json', '--clustering_method', clustering_method, '--nclusters', '3', '--output_json', 'data/output.json'])
+subprocess.call([exe_path, '--input_json', 'data/input.json', '--clustering_method', clustering_method, '--nclusters', '4', '--output_json', 'data/output.json'])
 
 # Read output.json
 with open('data/output.json', 'r') as f:

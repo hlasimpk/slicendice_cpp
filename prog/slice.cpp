@@ -88,7 +88,7 @@ int main(int argc, char** argv){
         agglomerative.fit(atomic_matrix);
         labels = agglomerative.labels_;
     } else if (clustering_method == "birch") {
-        Birch birch(0.5, 50, nclusters);
+        Birch birch(nclusters);
         birch.fit(atomic_matrix);
         labels = birch.labels_;
     } else if (clustering_method == "kmeans") {
