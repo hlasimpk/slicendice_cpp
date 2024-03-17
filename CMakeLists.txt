@@ -11,6 +11,7 @@ ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans_common.cpp
 ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans_elkan.cpp
 ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans_lloyd.cpp
 ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/slice.cpp
+${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/pae_igraph.cpp
 )
 
 target_include_directories(slicendice_cpp PRIVATE ${CMAKE_SOURCE_DIR}/checkout/rdkit-Release_2023_09_1/External/Eigen/eigen/)
@@ -25,6 +26,7 @@ ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans.h
 ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans_common.h
 ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans_elkan.h
 ${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/kmeans_lloyd.h
+${CMAKE_SOURCE_DIR}/checkout/slicendice_cpp/prog/pae_igraph.h
 )
 
 set_target_properties(ccp4 PROPERTIES PUBLIC_HEADER "${slicendice_cpp_HEADERS}")
