@@ -175,7 +175,7 @@ void PAE::fit(MatrixXd& X) {
     igraph_vector_int_destroy(&membership);
     igraph_vector_destroy(&igraph_weights);
 
-    if (nclusters < 0 || !merge_clusters) {
+    if ((nclusters < 0 || !merge_clusters) && (nclusters > labels_.maxCoeff() + 1)) {
         return;
     } else {
         // Calculate the centroids of the clusters
