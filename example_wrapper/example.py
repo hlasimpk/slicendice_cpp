@@ -3,10 +3,10 @@ import json
 import numpy as np
 import subprocess
 
-xyzin = 'data/T1049_AF_model.pdb'
-xyzin = 'data/ranked_0.pdb'
+xyzin = 'data/Q5VSL9_AF_model.pdb'
+pae_json = 'data/Q5VSL9_AF_model.json'
 struct = gemmi.read_structure(xyzin)
-clustering_method = 'birch'
+clustering_method = 'pae'
 
 # Take data from models and write to input.json
 molecule_type = "protein"
@@ -30,9 +30,10 @@ for model in struct:
 with open('data/input.json', 'w') as f:
     json.dump(input_data, f)
 
+
 # Run slice
 exe_path = '../bin/slice'
-subprocess.call([exe_path, '--input_json', 'data/input.json', '--clustering_method', clustering_method, '--nclusters', '4', '--output_json', 'data/output.json'])
+subprocess.call([exe_path, '--input_json', 'data/input.json', '--clustering_method', clustering_method, '--nclusters', '4', '--input_pae', pae_json, '--output_json', 'data/output.json'])
 
 # Read output.json
 with open('data/output.json', 'r') as f:

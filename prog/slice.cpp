@@ -1,12 +1,12 @@
 #include "agglomerative.h"
 #include "birch.h"
 #include "kmeans.h"
-
-#include <json/json.h>
+#include "pae_igraph.h"
 
 #include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
+#include <json/json.h>
 #include <string>
 
 
@@ -37,6 +37,7 @@ Json::Value vector_to_json(Eigen::VectorXi vector) {
 
 int main(int argc, char** argv){
     std::string input_json;
+    std::string input_pae;
     std::string clustering_method = "birch";
     int nclusters = 3;
     std::string output_json = "output.json"; 
@@ -48,7 +49,11 @@ int main(int argc, char** argv){
             } else {
                 std::cerr << "--input_json option requires one argument." << std::endl;
                 return 1;
-            }  
+            }
+        } else if (arg == "--input_pae") {
+            if (i + 1 < argc) { 
+                input_pae = argv[++i]; 
+            }
         } else if (arg == "--nclusters") {
             if (i + 1 < argc) { 
                 nclusters = std::stoi(argv[++i]); 
@@ -62,7 +67,7 @@ int main(int argc, char** argv){
                 output_json = argv[++i]; 
             } 
         } else if (arg == "--help" || arg == "-h") {
-            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --nclusters (Default: 3) --clustering_method <agglomerative, birch, kmeans> (Default: birch) --output_json path/to/output.json (Default: output.json)" << std::endl;
+            std::cout << "Usage: " << argv[0] << " --input_json path/to/input.json --nclusters (Default: 3) --clustering_method <agglomerative, birch, kmeans, pae> (Default: birch) --input_pae path/to/pae (only used with pae clustering) --output_json path/to/output.json (Default: output.json)" << std::endl;
             return 0;
         } else {
             std::cerr << "Unknown option: " << arg << std::endl;
@@ -95,6 +100,10 @@ int main(int argc, char** argv){
         KMeans kmeans(nclusters);
         kmeans.fit(atomic_matrix);
         labels = kmeans.labels_;
+    } else if (clustering_method == "pae") {
+        PAE pae(nclusters, input_pae);
+        pae.fit(atomic_matrix);
+        labels = pae.labels_;
     } else {
         std::cout << "Clustering method: " << clustering_method << " not yet implemented." << std::endl;
     }
